@@ -1,11 +1,11 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import Image from "next/image";
 
 export default function Home() {
   return (
     <>
       <SignedOut>
         <SignInButton mode="modal" />
+        <button></button>
       </SignedOut>
       <SignedIn>
         <UserButton />
