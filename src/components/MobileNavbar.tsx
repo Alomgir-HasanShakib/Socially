@@ -23,6 +23,9 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 
 const MobileNavbar = () => {
+
+
+
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { isSignedIn } = useAuth();
   const { theme, setTheme } = useTheme();
