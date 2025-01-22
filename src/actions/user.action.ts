@@ -8,6 +8,14 @@ export const syncUser = async () => {
     const { userId } = await auth();
     const user = await currentUser();
     if (!userId || !user) return;
+
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        clerckId: userId,
+      },
+    });
+    if (existingUser) return existingUser;
+
     const dbUser = await prisma.user.create({
       data: {
         clerckId: userId,
