@@ -5,16 +5,17 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 
 export const syncUser = async () => {
   try {
-    const { userId } = await auth();
-    const user = await currentUser();
-    if (!userId || !user) return;
+    const { userId } = await auth(); // Get the user ID from the session
+    const user = await currentUser(); // Get the user object from the session
+    if (!userId || !user) return; // If no user ID or user object, return
 
     const existingUser = await prisma.user.findUnique({
       where: {
         clerckId: userId,
       },
-    });
-    if (existingUser) return existingUser;
+    }); // Check if the user already exists in the database
+
+    if (existingUser) return existingUser; // If the user already exists, return the user
 
     const dbUser = await prisma.user.create({
       data: {
@@ -25,9 +26,9 @@ export const syncUser = async () => {
         email: user.emailAddresses[0].emailAddress,
         image: user.imageUrl,
       },
-    });
-    return dbUser;
+    }); // If the user does not exist, create a new user in the database
+    return dbUser; // Return the newly created user
   } catch (error) {
-    console.log("Error in syncUser", error);
+    console.log("Error in syncUser", error); // Log the error
   }
 };
