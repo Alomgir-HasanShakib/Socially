@@ -39,18 +39,28 @@ export const getUserByClerkId = async (clerckId: string) => {
       where: {
         clerckId: clerckId,
       },
-      include:{
-        _count:{
-          select:{
-            followers:true,
-            following:true,
-            posts:true,
-          }
-        }
-      }
+      include: {
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            posts: true,
+          },
+        },
+      },
     }); // Find the user in the database
     return user; // Return the user
   } catch (error) {
     console.log("Error in getUser", error); // Log the error
   }
-}
+};
+
+export const getDbUserId = async () => {
+  const { userId: clerckId } = await auth(); // Get the user ID from the session
+  if (!clerckId) throw new Error("Unauthorized");
+
+  const user = await getUserByClerkId(clerckId); // Get the user from the database
+
+  if(!user) throw new Error("User not found");
+  return user.id; // Return the user ID
+};
