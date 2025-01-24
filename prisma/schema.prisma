@@ -27,11 +27,12 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations 
-  posts                Post[]
-  comments             Comment[]
-  likes                Like[]
-  followers            Follows[]      @relation("Followers")
-  following            Follows[]      @relation("Following")
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+
+  followers            Follows[]      @relation("Following")
+  following            Follows[]      @relation("Followers")
   notifications        Notification[] @relation("userNotifications")
   notificationsCreated Notification[] @relation("notificationCreator")
 }

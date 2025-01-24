@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 export const syncUser = async () => {
   try {
@@ -75,7 +76,7 @@ export const getRandomUser = async () => {
             NOT: { id: userId },
           },
           {
-            NOT: { followers: { some: { followerId: userId } } },
+            NOT: { followers: { some: { followingId: userId } } },
           },
         ],
       },
@@ -96,5 +97,58 @@ export const getRandomUser = async () => {
   } catch (error) {
     console.log("Error in getRandomUser", error); // Log the error
     return []; // Return an empty array
+  }
+};
+
+export const toggleFollow = async (targetUserId: string) => {
+  try {
+    const userId = await getDbUserId();
+    // Get the user ID
+
+    if (userId === targetUserId) {
+      throw new Error("You can not follow yourself");
+    } // If the user is trying to follow themselves
+
+    const existingFollow = await prisma.follows.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: targetUserId,
+          followingId: userId,
+        },
+      },
+    }); // Check if the user is already following the user
+
+    if (existingFollow) {
+      await prisma.follows.delete({
+        where: {
+          followerId_followingId: {
+            followerId: targetUserId,
+            followingId: userId,
+          },
+        },
+      }); // If the user is already following the user, unfollow the user
+    } else {
+      await prisma.$transaction([
+        prisma.follows.create({
+          data: {
+            followerId: targetUserId,
+            followingId: userId,
+          },
+        }), // If the user is not following the user, follow the user
+
+        prisma.notification.create({
+          data: {
+            userId: targetUserId,
+            type: "FOLLOW",
+            creatorId: userId,
+          },
+        }),
+      ]);
+    }
+    revalidatePath("/"); // Revalidate the home page
+    return { success: true }; // Return success
+  } catch (error) {
+    console.log("Error in toggleFollow", error); // Log the error
+    return { success: false, error: "Error toggling follow" }; // Return an error
   }
 };
