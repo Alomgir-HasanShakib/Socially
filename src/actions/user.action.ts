@@ -32,3 +32,25 @@ export const syncUser = async () => {
     console.log("Error in syncUser", error); // Log the error
   }
 };
+
+export const getUser = async (clerckId: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: clerckId,
+      },
+      include:{
+        _count:{
+          select:{
+            followers:true,
+            following:true,
+            posts:true,
+          }
+        }
+      }
+    }); // Find the user in the database
+    return user; // Return the user
+  } catch (error) {
+    console.log("Error in getUser", error); // Log the error
+  }
+}
