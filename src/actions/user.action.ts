@@ -33,11 +33,11 @@ export const syncUser = async () => {
   }
 };
 
-export const getUser = async (clerckId: string) => {
+export const getUserByClerkId = async (clerckId: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: clerckId,
+        clerckId: clerckId,
       },
       include:{
         _count:{
