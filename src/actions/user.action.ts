@@ -61,7 +61,40 @@ export const getDbUserId = async () => {
 
   const user = await getUserByClerkId(clerckId); // Get the user from the database
 
-  if(!user) throw new Error("User not found");
+  if (!user) throw new Error("User not found");
   return user.id; // Return the user ID
 };
 
+export const getRandomUser = async () => {
+  try {
+    const userId = await getDbUserId(); // Get the user ID
+    const randomUser = await prisma.user.findMany({
+      where: {
+        AND: [
+          {
+            NOT: { id: userId },
+          },
+          {
+            NOT: { followers: { some: { followerId: userId } } },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        image: true,
+        _count: {
+          select: {
+            followers: true,
+          },
+        },
+      },
+      take: 3,
+    }); // Get 3 random users exclude ourselves & users that we already follow from the database
+    return randomUser; // Return the user
+  } catch (error) {
+    console.log("Error in getRandomUser", error); // Log the error
+    return []; // Return an empty array
+  }
+};
