@@ -1,9 +1,105 @@
-import React from 'react'
+"use client";
+
+import { useUser } from "@clerk/nextjs";
+import { useState } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Avatar, AvatarImage } from "./ui/avatar";
+import { Textarea } from "./ui/textarea";
+import { ImageIcon, Loader2Icon, SendIcon } from "lucide-react";
+import { Button } from "./ui/button";
 
 const CreatePost = () => {
-  return (
-    <div>CreatePost</div>
-  )
-}
+    const { user } = useUser();
+    const [content, setContent] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [isPosting, setIsPosting] = useState(false);
+    const [showImageUpload, setShowImageUpload] = useState(false);
 
-export default CreatePost
+    const handleSubmit = async () => {
+        if (!content.trim() && !imageUrl) return;
+        setIsPosting(true);
+        try {
+            await createPost(content,imageUrl)
+            const res = await fetch("/api/post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    content,
+                    imageUrl,
+                }),
+            });
+            if (res.ok) {
+                setContent("");
+                setImageUrl("");
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsPosting(false);
+        }
+    };
+
+
+
+    return (
+        <Card className="mb-6">
+            <CardContent className="pt-6">
+                <div className="space-y-4">
+                    <div className="flex space-x-4">
+                        <Avatar className="size-10">
+                            <AvatarImage
+                                src={user?.imageUrl}
+                                alt={`${user?.username} photo`}
+                            />
+                        </Avatar>
+                        <Textarea
+                            className="min-h-[100px] resize-none border-none focus-visible:ring-0 p-0 text-base"
+                            placeholder="What's on your mind?"
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            disabled={isPosting}
+                        />
+                    </div>
+                    {/* TODO : Handle image uploads */}
+                    <div className="flex items-center justify-between border-t pt-4">
+                        <div className="flex space-x-2">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="text-muted-foreground hover:text-primary"
+                                onClick={() => setShowImageUpload(!showImageUpload)}
+                                disabled={isPosting}
+                            >
+                                <ImageIcon className="size-4 mr-2" />
+                                Photo
+                            </Button>
+                        </div>
+                        <Button
+                            className="flex items-center"
+                            onClick={handleSubmit}
+                            disabled={(!content.trim() && !imageUrl) || isPosting}
+                        >
+                            {isPosting ? (
+                                <>
+                                    <Loader2Icon className="size-4 mr-2 animate-spin" />
+                                    Posting...
+                                </>
+                            ) : (
+                                <>
+                                    <SendIcon className="size-4 mr-2" />
+                                    Post
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+
+            </CardContent>
+        </Card >
+    );
+};
+
+export default CreatePost;
