@@ -7,7 +7,7 @@ import { BellIcon, HomeIcon, UserIcon } from "lucide-react";
 import { SignInButton, UserButton } from "@clerk/nextjs";
 
 const DesktopNavbar = async () => {
-  const user = await currentUser();
+  const user = await currentUser(); // Fetch the current user
   return (
     <div className="hidden md:flex items-center space-x-4">
       <ModeToggle />
@@ -44,7 +44,7 @@ const DesktopNavbar = async () => {
             <Button variant={"default"}>Sign In</Button>
           </SignInButton>
         </>
-      )}
+      )} 
     </div>
   );
 };
