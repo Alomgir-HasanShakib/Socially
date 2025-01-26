@@ -16,6 +16,7 @@ import Link from "next/link";
 import { Card, CardContent } from "./ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { DeleteAlertDialog } from "./DeleteAlertDialog";
+import Image from "next/image";
 
 type Posts = Awaited<ReturnType<typeof getPosts>>;
 type Post = NonNullable<Posts>[number];
@@ -135,10 +136,12 @@ const PostCard = ({
           {/* POST IMAGE */}
           {post.image && (
             <div className="rounded-lg overflow-hidden">
-              <img
+              <Image
                 src={post.image}
                 alt="Post content"
-                className="w-full h-auto object-cover"
+                width={300}
+                height={300}
+                className="w-full h-72 object-scale-down"
               />
             </div>
           )}
