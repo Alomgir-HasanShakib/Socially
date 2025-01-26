@@ -41,6 +41,11 @@ export const getUserByClerkId = async (clerckId: string) => {
         clerckId: clerckId,
       },
       include: {
+        following: {
+          select: {
+            following: true,
+          },
+        },
         _count: {
           select: {
             followers: true,
@@ -69,7 +74,7 @@ export const getDbUserId = async () => {
 export const getRandomUser = async () => {
   try {
     const userId = await getDbUserId(); // Get the user ID
-    if(!userId) return []; // If no user ID, return an empty array
+    if (!userId) return []; // If no user ID, return an empty array
     const randomUser = await prisma.user.findMany({
       where: {
         AND: [
@@ -105,7 +110,7 @@ export const toggleFollow = async (targetUserId: string) => {
   try {
     const userId = await getDbUserId();
     // Get the user ID
-if(!userId) return
+    if (!userId) return;
     if (userId === targetUserId) {
       throw new Error("You can not follow yourself");
     } // If the user is trying to follow themselves

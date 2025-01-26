@@ -19,6 +19,8 @@ const Sidebar = async () => {
 
     const user = await getUserByClerkId(authUser.id)
 
+    console.log(user?.following)
+
     if (!user) {
         return null
     }

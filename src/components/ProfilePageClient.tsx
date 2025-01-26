@@ -33,6 +33,7 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import Link from "next/link";
 type User = Awaited<ReturnType<typeof getProfileByUsername>>;
 type Posts = Awaited<ReturnType<typeof getUserPosts>>;
 interface ProfilePageClientProps {
@@ -112,12 +113,13 @@ const ProfilePageClient = ({
                 <div className="w-full mt-6">
                   <div className="flex justify-between mb-4">
                     <div>
+                      <Link href={"/following"}>
                       <div className="font-semibold">
                         {user._count.following.toLocaleString()}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         Following
-                      </div>
+                      </div></Link>
                     </div>
                     <Separator orientation="vertical" />
                     <div>
