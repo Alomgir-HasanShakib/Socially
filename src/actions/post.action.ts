@@ -113,24 +113,76 @@ export const toggleLike = async (postId: string) => {
             userId,
           },
         }),
-        ...(post.authorId !== userId ?[
-          prisma.notification.create({
-            data:{
-              type: "LIKE",
-              userId: post.authorId,
-              creatorId: userId,
-              postId
-            }
-          })
-        ]:[])
-       
-      ])
+        ...(post.authorId !== userId
+          ? [
+              prisma.notification.create({
+                data: {
+                  type: "LIKE",
+                  userId: post.authorId,
+                  creatorId: userId,
+                  postId,
+                },
+              }),
+            ]
+          : []),
+      ]);
     }
 
     revalidatePath("/");
-    return {success: true}
+    return { success: true };
   } catch (error) {
     console.log("Failed to toggle like:", error);
-    return {success: false, error: "Failed to toggle like"}
+    return { success: false, error: "Failed to toggle like" };
+  }
+};
+
+export const createComment = async (postId: string, content: string) => {
+  try {
+    const userId = await getDbUserId();
+    if (!userId) return;
+    if (!content) throw new Error("Content is required");
+
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      select: {
+        authorId: true,
+      },
+    });
+    if (!post) throw new Error("Post not found");
+
+    // create comment and notification in a transection
+
+    const [comment] = await prisma.$transaction(async (tx) => {
+      // create comment first
+      const newComment = await tx.comment.create({
+        data: {
+          content,
+          postId,
+          authorId: userId,
+        },
+      });
+
+      //  create notification if commenting on someone else's post
+
+      if (post.authorId !== userId) {
+        await tx.notification.create({
+          data: {
+            type: "COMMENT",
+            userId: post.authorId,
+            creatorId: userId,
+            postId,
+            commentId: newComment.id,
+          },
+        });
+      }
+      return [newComment];
+    });
+    revalidatePath(`/`);
+    return { success: true, comment };
+  } catch (error) {
+    console.log("Failed to create comment:", error);
+    return { success: false, error: "Failed to create comment" };
   }
 };
