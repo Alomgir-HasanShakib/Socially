@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma";
 import { getDbUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
-import { get } from "http";
 
 export const createPost = async (content: string, imageUrl: string) => {
   try {

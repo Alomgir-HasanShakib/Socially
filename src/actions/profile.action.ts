@@ -34,7 +34,8 @@ export const getProfileByUsername = async (username: string) => {
     }
     return user;
   } catch (error) {
-    throw new Error("Failed to fetch profile", error);
+    console.log(error);
+    throw new Error("Failed to fetch profile");
   }
 };
 
@@ -86,6 +87,7 @@ export const getUserPosts = async (userId: string) => {
     });
     return posts;
   } catch (error) {
+    console.log(error);
     throw new Error("Failed to fetch posts");
   }
 };
@@ -142,6 +144,7 @@ export const getUserLikedPosts = async (userId: string) => {
     });
     return likedPosts;
   } catch (error) {
+    console.log(error);
     throw new Error("Failed to fetch user liked post");
   }
 };
@@ -169,6 +172,7 @@ export const updateProfile = async (formData: FormData) => {
     revalidatePath(`/profile`);
     return { success: true, user };
   } catch (error) {
+    console.log(error);
     throw new Error("Failed to update profile");
   }
 };
@@ -187,7 +191,7 @@ export const isFollowing = async (userId: string) => {
     });
     return !!follow;
   } catch (error) {
+    console.log(error);
     throw new Error("Failed to check follow status");
-    return false;
   }
 };

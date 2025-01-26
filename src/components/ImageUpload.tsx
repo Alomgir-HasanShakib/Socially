@@ -1,7 +1,6 @@
 "use client";
 
 import { UploadDropzone } from "@/lib/uploadthing";
-import { error } from "console";
 import { XIcon } from "lucide-react";
 import Image from "next/image";
 
