@@ -43,3 +43,20 @@ export const getNotification = async () => {
     throw new Error("Error in getNotification");
   }
 };
+
+export const markNotificationAsRead = async (notificationId: string[]) => {
+  try {
+    await prisma.notification.updateMany({
+      where: {
+        id: {
+          in: notificationId,
+        },
+      },
+      data: { read: true },
+    });
+    return { success: true };
+  } catch (error) {
+    console.log("Error in markNotificationAsRead", error);
+    return { success: false };
+  }
+};
