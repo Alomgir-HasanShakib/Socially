@@ -76,7 +76,7 @@ export const getRandomUser = async () => {
             NOT: { id: userId },
           },
           {
-            NOT: { followers: { some: { followingId: userId } } },
+            NOT: { followers: { some: { followerId: userId } } },
           },
         ],
       },
@@ -112,8 +112,8 @@ export const toggleFollow = async (targetUserId: string) => {
     const existingFollow = await prisma.follows.findUnique({
       where: {
         followerId_followingId: {
-          followerId: targetUserId,
-          followingId: userId,
+          followerId: userId,
+          followingId: targetUserId,
         },
       },
     }); // Check if the user is already following the user
@@ -122,8 +122,8 @@ export const toggleFollow = async (targetUserId: string) => {
       await prisma.follows.delete({
         where: {
           followerId_followingId: {
-            followerId: targetUserId,
-            followingId: userId,
+            followerId: userId,
+            followingId: targetUserId,
           },
         },
       }); // If the user is already following the user, unfollow the user
@@ -131,8 +131,8 @@ export const toggleFollow = async (targetUserId: string) => {
       await prisma.$transaction([
         prisma.follows.create({
           data: {
-            followerId: targetUserId,
-            followingId: userId,
+            followerId: userId,
+            followingId: targetUserId,
           },
         }), // If the user is not following the user, follow the user
 
