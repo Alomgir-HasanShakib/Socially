@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getDbUserId } from "./user.action";
 
 export const getProfileByUsername = async (username: string) => {
   try {
@@ -166,17 +167,16 @@ export const updateProfile = async (formData: FormData) => {
       },
     });
     revalidatePath(`/profile`);
-    return user;
+    return { success: true, user };
   } catch (error) {
     throw new Error("Failed to update profile");
   }
 };
 
 export const isFollowing = async (userId: string) => {
-  const { userId: currentUserId } = await auth();
-  if (!currentUserId) return false;
-
   try {
+    const currentUserId = await getDbUserId();
+    if (!currentUserId) return false;
     const follow = await prisma.follows.findUnique({
       where: {
         followerId_followingId: {
