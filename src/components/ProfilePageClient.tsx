@@ -42,7 +42,6 @@ interface ProfilePageClientProps {
   likedPost: Posts;
   isFollowing: boolean;
 }
-
 const ProfilePageClient = ({
   user,
   posts,
@@ -87,7 +86,6 @@ const ProfilePageClient = ({
       setIsUpdatingFollow(false);
     }
   };
-
   const isOwnProfile =
     currentUser?.username === user.username ||
     currentUser?.emailAddresses[0].emailAddress.split("@")[0] === user.username;
@@ -114,12 +112,13 @@ const ProfilePageClient = ({
                   <div className="flex justify-between mb-4">
                     <div>
                       <Link href={"/following"}>
-                      <div className="font-semibold">
-                        {user._count.following.toLocaleString()}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Following
-                      </div></Link>
+                        <div className="font-semibold">
+                          {user._count.following.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Following
+                        </div>
+                      </Link>
                     </div>
                     <Separator orientation="vertical" />
                     <div>
@@ -139,7 +138,6 @@ const ProfilePageClient = ({
                     </div>
                   </div>
                 </div>
-
                 {/* "FOLLOW & EDIT PROFILE" BUTTONS */}
                 {!currentUser ? (
                   <SignInButton mode="modal">
@@ -162,7 +160,7 @@ const ProfilePageClient = ({
                   >
                     {isFollowing ? "Unfollow" : "Follow"}
                   </Button>
-                )}
+                )} 
 
                 {/* LOCATION & WEBSITE */}
                 <div className="w-full mt-6 space-y-2 text-sm">
